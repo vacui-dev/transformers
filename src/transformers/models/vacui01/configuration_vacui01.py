@@ -30,7 +30,6 @@ class Vacui01Config(PretrainedConfig):
     def __init__(
         self,
         vocab_size=151936,
-        hidden_size=4096,
         intermediate_size=22016,
         num_hidden_layers=32,
         num_attention_heads=32,
@@ -48,31 +47,28 @@ class Vacui01Config(PretrainedConfig):
         max_window_layers=28,
         attention_dropout=0.0,
         qk_subspace_dim=1024,
+        v_subspace_dim=3072,
         qk_v_context_size=256,
         **kwargs,
     ):
         self.vocab_size = vocab_size
         self.max_position_embeddings = max_position_embeddings
-        self.hidden_size = hidden_size
         self.intermediate_size = intermediate_size
         self.num_hidden_layers = num_hidden_layers
         self.num_attention_heads = num_attention_heads
         self.use_sliding_window = use_sliding_window
         self.sliding_window = sliding_window
         self.max_window_layers = max_window_layers
-
-        if qk_subspace_dim >= hidden_size:
-            raise ValueError(
-                f"qk_subspace_dim ({qk_subspace_dim}) must be less than hidden_size ({hidden_size})."
-            )
         
-        v_hidden_size = hidden_size - qk_subspace_dim
-        if qk_v_context_size > v_hidden_size:
+        if qk_v_context_size > v_subspace_dim:
             raise ValueError(
-                f"qk_v_context_size ({qk_v_context_size}) must be less than v_hidden_size ({v_hidden_size})."
+                f"qk_v_context_size ({qk_v_context_size}) must be <= v_subspace_dim ({v_subspace_dim})."
             )
         
         self.qk_subspace_dim = qk_subspace_dim
+        self.v_subspace_dim = v_subspace_dim
+        self.hidden_size = qk_subspace_dim + v_subspace_dim
+
         self.qk_v_context_size = qk_v_context_size
 
         if num_key_value_heads is None:
