@@ -48,7 +48,7 @@ class Vacui01Config(PretrainedConfig):
         attention_dropout=0.0,
         qk_subspace_dim=1024,
         v_subspace_dim=3072,
-        qk_v_context_size=256,
+        v_context_size=256,
         **kwargs,
     ):
         self.vocab_size = vocab_size
@@ -60,16 +60,16 @@ class Vacui01Config(PretrainedConfig):
         self.sliding_window = sliding_window
         self.max_window_layers = max_window_layers
         
-        if qk_v_context_size > v_subspace_dim:
+        if v_context_size > v_subspace_dim:
             raise ValueError(
-                f"qk_v_context_size ({qk_v_context_size}) must be <= v_subspace_dim ({v_subspace_dim})."
+                f"v_context_size ({v_context_size}) must be <= v_subspace_dim ({v_subspace_dim})."
             )
         
+        self.hidden_size = qk_subspace_dim + v_subspace_dim
         self.qk_subspace_dim = qk_subspace_dim
         self.v_subspace_dim = v_subspace_dim
-        self.hidden_size = qk_subspace_dim + v_subspace_dim
 
-        self.qk_v_context_size = qk_v_context_size
+        self.v_context_size = v_context_size
 
         if num_key_value_heads is None:
             num_key_value_heads = num_attention_heads

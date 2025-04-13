@@ -41,11 +41,11 @@ class Vacui01MLP(LlamaMLP):
 class Vacui01Attention(LlamaAttention):
     def __init__(self, config: Vacui01Config, layer_idx: int):
         super().__init__()
-        self.q_proj = nn.Linear(config.qk_subspace_dim + config.qk_v_context_size, config.num_attention_heads * self.head_dim, bias=True)
-        self.k_proj = nn.Linear(config.qk_subspace_dim + config.qk_v_context_size, config.num_key_value_heads * self.head_dim, bias=True)
-        self.v_proj = nn.Linear(config.hidden_size - config.qk_subspace_dim, config.num_key_value_heads * self.head_dim, bias=True)
-        
-        self.v_to_context = nn.Linear(config.hidden_size - config.qk_subspace_dim, config.qk_v_context_size, bias=True)
+        self.q_proj = nn.Linear(config.qk_subspace_dim + config.v_context_size, config.num_attention_heads * self.head_dim, bias=True)
+        self.k_proj = nn.Linear(config.qk_subspace_dim + config.v_context_size, config.num_key_value_heads * self.head_dim, bias=True)
+        self.v_proj = nn.Linear(config.v_subspace_dim, config.num_key_value_heads * self.head_dim, bias=True)
+
+        self.v_to_context = nn.Linear(config.v_subspace_dim, config.v_context_size, bias=True)
 
 
     def forward(
